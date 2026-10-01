@@ -1,0 +1,8 @@
+{
+  "name": "@gd/discord",
+  "version": "0.8.0",
+  "main": "src/mod.gd",
+  "include": ["src/mod.gd"],
+  "godot": true,
+  "description": "Discord Gateway v10とRESTを使う純GDScript文字Bot package"
+}

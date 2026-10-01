@@ -1,0 +1,43 @@
+; Supabaseの公開class、platform library、待ち方と待った後の型を定義するmanifest。
+
+[configuration]
+; 初期化入口と読込み可能なGodot版。
+entry_symbol = "supabase_library_init"
+compatibility_minimum = "4.7"
+reloadable = true
+
+[libraries]
+; packageが機種ごとに選ぶnative library。gdのdebug版でもrelease版でも同じlibraryを読む。
+macos = "bin/libgdsupabase.macos.template_release.universal.dylib"
+linux.x86_64 = "bin/libgdsupabase.linux.template_release.x86_64.so"
+linux.arm64 = "bin/libgdsupabase.linux.template_release.arm64.so"
+windows.x86_64 = "bin/libgdsupabase.windows.template_release.x86_64.dll"
+
+[classes]
+; gdの型推論とcompileが追跡するclass。
+GDSupabaseCallInternal = ""
+GDSupabaseClient = ""
+GDSupabase = ""
+
+[await]
+; 待った後の値の型。二値の後ろはErr。
+; 通常名と_async名を両方書くと、通常名は完了まで自動で待ち、_async名はGDTaskを返す。
+GDSupabaseClient.select = "Pair:Array"
+GDSupabaseClient.select_async = "Pair:Array"
+GDSupabaseClient.insert = "Pair:Array"
+GDSupabaseClient.insert_async = "Pair:Array"
+GDSupabaseClient.update = "Pair:Array"
+GDSupabaseClient.update_async = "Pair:Array"
+GDSupabaseClient.remove = "Pair:Array"
+GDSupabaseClient.remove_async = "Pair:Array"
+GDSupabaseClient.rpc = "Pair:Variant"
+GDSupabaseClient.rpc_async = "Pair:Variant"
+GDSupabaseClient.sign_in = "Pair:Dictionary"
+GDSupabaseClient.sign_in_async = "Pair:Dictionary"
+GDSupabaseClient.auth_settings = "Pair:Dictionary"
+GDSupabaseClient.auth_settings_async = "Pair:Dictionary"
+GDSupabaseClient.refresh = "Pair:Dictionary"
+GDSupabaseClient.refresh_async = "Pair:Dictionary"
+GDSupabaseClient.sign_out = "Pair:Variant"
+GDSupabaseClient.sign_out_async = "Pair:Variant"
+

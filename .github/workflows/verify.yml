@@ -1,0 +1,42 @@
+# Verify locally built release libraries on a native Windows runner.
+name: Verify packages
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Draft release tag
+        required: true
+      sha256:
+        description: Expected package archive SHA-256
+        required: true
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
+      - name: Verify native package contracts
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+          ARCHIVE_HASH: ${{ inputs.sha256 }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Force tmp | Out-Null
+          gh release download $env:TAG --repo $env:GITHUB_REPOSITORY --pattern gd-pkgs-0.8.0.zip --dir tmp
+          if ($LASTEXITCODE -ne 0) { throw 'Candidate download failed' }
+          if ((Get-FileHash tmp/gd-pkgs-0.8.0.zip -Algorithm SHA256).Hash.ToLowerInvariant() -cne $env:ARCHIVE_HASH) { throw 'Candidate fingerprint mismatch' }
+          Expand-Archive tmp/gd-pkgs-0.8.0.zip tmp/candidate
+          $build = Get-Content tmp/candidate/BUILD.json -Raw | ConvertFrom-Json
+          if ($build.source -cne $env:GITHUB_SHA) { throw 'Candidate source mismatch' }
+          gh release download 4.7.2-stable --repo godotengine/godot-builds --pattern Godot_v4.7.2-stable_win64.exe.zip --pattern SHA512-SUMS.txt --dir tmp
+          if ($LASTEXITCODE -ne 0) { throw 'Runtime download failed' }
+          $expected = ((Select-String -Path tmp/SHA512-SUMS.txt -Pattern ' Godot_v4.7.2-stable_win64.exe.zip$').Line -split '\s+')[0]
+          if ((Get-FileHash tmp/Godot_v4.7.2-stable_win64.exe.zip -Algorithm SHA512).Hash.ToLowerInvariant() -cne $expected) { throw 'Runtime fingerprint mismatch' }
+          Expand-Archive tmp/Godot_v4.7.2-stable_win64.exe.zip tmp/godot
+          uv run --no-project python tests/native.py --engine tmp/godot/Godot_v4.7.2-stable_win64_console.exe --artifacts tmp/candidate/supabase/bin --platform windows
+          if ($LASTEXITCODE -ne 0) { throw 'Package contract failure' }

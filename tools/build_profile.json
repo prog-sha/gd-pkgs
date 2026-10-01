@@ -1,0 +1,13 @@
+{
+  "enabled_classes": [
+    "Engine",
+    "HTTPClient",
+    "HTTPRequest",
+    "JSON",
+    "Marshalls",
+    "Node",
+    "OS",
+    "RefCounted",
+    "SceneTree"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "name": "@gd/hello",
+  "version": "0.8.0",
+  "main": "src/mod.gd",
+  "include": ["src/mod.gd"],
+  "godot": true,
+  "description": "純GDScript packageの最小実例"
+}

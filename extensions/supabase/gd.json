@@ -1,0 +1,6 @@
+{
+  "name": "@gd/supabase",
+  "version": "0.8.0",
+  "main": "supabase.gdextension",
+  "description": "Supabase DatabaseとAuthを使うgd用client拡張"
+}
